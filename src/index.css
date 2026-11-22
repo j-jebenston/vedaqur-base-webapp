@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Vedaqur Design System — Premium Ayurvedic */
+@layer base {
+  :root {
+    --background: 42 44% 98%;          /* #FDFAF5 cream */
+    --foreground: 0 0% 11%;             /* #1C1C1C */
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 11%;
+
+    --primary: 161 70% 37%;             /* #1D9E75 green */
+    --primary-foreground: 42 44% 98%;
+    --primary-dark: 167 76% 25%;        /* #0F6E56 */
+    --primary-soft: 159 60% 92%;        /* #E1F5EE */
+
+    --secondary: 159 60% 92%;
+    --secondary-foreground: 167 76% 25%;
+
+    --muted: 42 30% 95%;
+    --muted-foreground: 0 0% 38%;
+
+    --accent: 32 86% 55%;               /* #EF9F27 saffron */
+    --accent-foreground: 0 0% 11%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 42 25% 88%;
+    --input: 42 25% 88%;
+    --ring: 161 70% 37%;
+
+    --radius: 0.75rem;
+
+    --gradient-hero: linear-gradient(135deg, hsl(161 70% 37% / 0.92), hsl(167 76% 25% / 0.85));
+    --gradient-saffron: linear-gradient(135deg, hsl(32 86% 55%), hsl(28 90% 48%));
+    --gradient-soft: linear-gradient(180deg, hsl(159 60% 96%), hsl(42 44% 98%));
+    --shadow-soft: 0 4px 20px -4px hsl(161 70% 37% / 0.12);
+    --shadow-elegant: 0 20px 60px -20px hsl(167 76% 25% / 0.25);
+    --shadow-glow: 0 0 30px hsl(161 70% 50% / 0.25);
+
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 11%;
+    --sidebar-primary: 161 70% 37%;
+    --sidebar-primary-foreground: 42 44% 98%;
+    --sidebar-accent: 159 60% 92%;
+    --sidebar-accent-foreground: 167 76% 25%;
+    --sidebar-border: 42 25% 88%;
+    --sidebar-ring: 161 70% 37%;
+  }
+
+  .dark {
+    --background: 167 30% 8%;
+    --foreground: 42 44% 95%;
+    --card: 167 30% 11%;
+    --card-foreground: 42 44% 95%;
+    --popover: 167 30% 11%;
+    --popover-foreground: 42 44% 95%;
+    --primary: 161 70% 45%;
+    --primary-foreground: 167 30% 8%;
+    --primary-dark: 167 70% 35%;
+    --primary-soft: 167 30% 18%;
+    --secondary: 167 30% 16%;
+    --secondary-foreground: 42 44% 95%;
+    --muted: 167 30% 16%;
+    --muted-foreground: 42 20% 70%;
+    --accent: 32 86% 55%;
+    --accent-foreground: 167 30% 8%;
+    --border: 167 30% 18%;
+    --input: 167 30% 18%;
+    --ring: 161 70% 45%;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1, h2, h3, h4, .font-serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .gradient-hero { background: var(--gradient-hero); }
+  .gradient-saffron { background: var(--gradient-saffron); }
+  .gradient-soft { background: var(--gradient-soft); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .shadow-glow { box-shadow: var(--shadow-glow); }
+  .transition-smooth { transition: var(--transition-smooth); }
+  .text-balance { text-wrap: balance; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.6s ease-out both; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
