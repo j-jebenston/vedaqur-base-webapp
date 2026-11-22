@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Sparkles } from "lucide-react";
 import type { Product } from "@/lib/categories";
+import { getDiscountedPrice, getDisplayDiscount } from "@/lib/categories";
 import { Badge } from "./ui/badge";
 
 const productPlaceholder = (name: string) => {
@@ -16,6 +17,10 @@ const productPlaceholder = (name: string) => {
 export const ProductCard = ({ product }: { product: Product }) => {
   const isNew = (Date.now() - new Date(product.created_at).getTime()) < 30 * 24 * 60 * 60 * 1000;
   const img = product.images?.[0];
+  const discountedPrice = getDiscountedPrice(product);
+  const displayDiscount = getDisplayDiscount(product);
+  const hasDiscount = displayDiscount > 0;
+
   return (
     <Link
       to={`/products/${product.id}`}
@@ -28,11 +33,16 @@ export const ProductCard = ({ product }: { product: Product }) => {
         <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-background/90 backdrop-blur text-primary-dark border border-primary/20">
           {product.brand}
         </span>
-        {isNew && (
+        {/* Top-right badge: discount takes priority, then "New" */}
+        {hasDiscount ? (
+          <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-500 text-white shadow">
+            {displayDiscount}% OFF
+          </span>
+        ) : isNew ? (
           <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-accent text-accent-foreground">
             <Sparkles className="h-3 w-3" /> New
           </span>
-        )}
+        ) : null}
         {!product.in_stock && (
           <div className="absolute inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center">
             <span className="px-4 py-1.5 rounded-full bg-foreground text-background text-sm font-semibold">Out of Stock</span>
@@ -46,7 +56,20 @@ export const ProductCard = ({ product }: { product: Product }) => {
         <h3 className="font-serif text-xl font-semibold text-foreground line-clamp-1">{product.name}</h3>
         <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{product.short_description}</p>
         <div className="flex items-center justify-between pt-2 mt-auto">
-          <span className="text-xl font-bold text-primary-dark">₹{Number(product.price).toLocaleString("en-IN")}</span>
+          {hasDiscount ? (
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-xl font-bold text-primary-dark">
+                ₹{discountedPrice.toLocaleString("en-IN")}
+              </span>
+              <span className="text-sm text-muted-foreground line-through">
+                ₹{Number(product.price).toLocaleString("en-IN")}
+              </span>
+            </div>
+          ) : (
+            <span className="text-xl font-bold text-primary-dark">
+              ₹{Number(product.price).toLocaleString("en-IN")}
+            </span>
+          )}
           <span className="text-sm font-semibold text-primary group-hover:text-accent transition-smooth">View →</span>
         </div>
       </div>

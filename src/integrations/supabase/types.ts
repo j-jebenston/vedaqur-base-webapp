@@ -128,6 +128,8 @@ export type Database = {
           brand: string
           category: string
           created_at: string
+          discount_percentage: number
+          discount_valid_until: string | null
           dosage: string | null
           full_description: string
           id: string
@@ -147,6 +149,8 @@ export type Database = {
           brand: string
           category: string
           created_at?: string
+          discount_percentage?: number
+          discount_valid_until?: string | null
           dosage?: string | null
           full_description: string
           id?: string
@@ -166,6 +170,8 @@ export type Database = {
           brand?: string
           category?: string
           created_at?: string
+          discount_percentage?: number
+          discount_valid_until?: string | null
           dosage?: string | null
           full_description?: string
           id?: string

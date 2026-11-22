@@ -52,6 +52,8 @@ export type Product = {
   brand: string;
   category: string;
   price: number;
+  discount_percentage: number;
+  discount_valid_until: string | null;
   short_description: string;
   full_description: string;
   key_benefits: string[];
@@ -64,6 +66,27 @@ export type Product = {
   in_stock: boolean;
   created_at: string;
 };
+
+/** Returns the effective discounted price (rounded to whole ₹).
+ *  Returns the original price if no discount or if discount has expired. */
+export function getDiscountedPrice(product: Pick<Product, "price" | "discount_percentage" | "discount_valid_until">): number {
+  const pct = product.discount_percentage ?? 0;
+  if (pct <= 0) return product.price;
+  if (product.discount_valid_until && new Date() > new Date(product.discount_valid_until)) {
+    return product.price; // discount expired
+  }
+  return Math.round(product.price * (1 - pct / 100));
+}
+
+/** Returns the rounded display discount percentage (integer, no decimals). */
+export function getDisplayDiscount(product: Pick<Product, "discount_percentage" | "discount_valid_until">): number {
+  const pct = product.discount_percentage ?? 0;
+  if (pct <= 0) return 0;
+  if (product.discount_valid_until && new Date() > new Date(product.discount_valid_until)) {
+    return 0; // expired
+  }
+  return Math.round(pct);
+}
 
 export type Blog = {
   id: string;

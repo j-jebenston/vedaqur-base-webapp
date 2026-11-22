@@ -10,6 +10,8 @@ const blank = {
   brand: "",
   category: CATEGORIES[0].name,
   price: 0,
+  discount_percentage: 0,
+  discount_valid_until: null as string | null,
   short_description: "",
   full_description: "",
   key_benefits: [] as string[],
@@ -25,7 +27,8 @@ const FORMS = ["Tablet", "Syrup", "Powder", "Capsule", "Oil", "Other"];
 
 const AdminProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [editing, setEditing] = useState<Partial<Product> | null>(null);
+  const [editing, setEditing] = useState<Partial<Product> & { discount_valid_until: string | null } | null>(null);
+  const [enableExpiry, setEnableExpiry] = useState(false);
   const [benefitText, setBenefitText] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
@@ -43,6 +46,7 @@ const AdminProducts = () => {
   const open = (p?: Product) => {
     setBenefitText("");
     setImageFiles([]);
+    setEnableExpiry(!!(p?.discount_valid_until));
     setEditing(p ? { ...p } : { ...blank });
   };
 
@@ -107,6 +111,7 @@ const AdminProducts = () => {
               <th className="p-3">Brand</th>
               <th className="p-3">Category</th>
               <th className="p-3">Price</th>
+              <th className="p-3">Discount</th>
               <th className="p-3">Status</th>
               <th className="p-3 text-right">Actions</th>
             </tr>
@@ -120,6 +125,15 @@ const AdminProducts = () => {
                   {p.category}
                 </td>
                 <td className="p-3">₹{Number(p.price)}</td>
+                <td className="p-3">
+                  {p.discount_percentage && p.discount_percentage > 0 ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-bold">
+                      {Math.round(p.discount_percentage)}% OFF
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">—</span>
+                  )}
+                </td>
                 <td className="p-3">
                   {p.is_featured && (
                     <Star className="h-3 w-3 inline fill-accent text-accent mr-1" />
@@ -198,6 +212,66 @@ const AdminProducts = () => {
                 value={String(editing.price ?? 0)}
                 onChange={(v) => setEditing({ ...editing, price: Number(v) })}
               />
+
+              {/* ── Discount ── */}
+              <div className="p-4 rounded-xl border border-border bg-muted/30 space-y-3">
+                <p className="text-xs font-semibold text-foreground">Discount Settings</p>
+                <Inp
+                  label="Discount Percentage (0 = no discount)"
+                  type="number"
+                  value={String(editing.discount_percentage ?? 0)}
+                  onChange={(v) => {
+                    const clamped = Math.min(100, Math.max(0, Number(v)));
+                    setEditing({ ...editing, discount_percentage: clamped });
+                  }}
+                />
+                {/* Expiry toggle — admin controls whether to enable it */}
+                <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={enableExpiry}
+                    onChange={(e) => {
+                      setEnableExpiry(e.target.checked);
+                      if (!e.target.checked) {
+                        setEditing({ ...editing, discount_valid_until: null });
+                      }
+                    }}
+                  />
+                  Set discount expiry date
+                </label>
+                {enableExpiry && (
+                  <div>
+                    <label className="block text-xs font-medium mb-1">
+                      Discount valid until
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={
+                        editing.discount_valid_until
+                          ? new Date(editing.discount_valid_until).toISOString().slice(0, 16)
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setEditing({
+                          ...editing,
+                          discount_valid_until: e.target.value
+                            ? new Date(e.target.value).toISOString()
+                            : null,
+                        })
+                      }
+                      className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                    />
+                  </div>
+                )}
+                {/* Live preview */}
+                {(editing.discount_percentage ?? 0) > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Preview: ₹{Math.round(Number(editing.price ?? 0) * (1 - Number(editing.discount_percentage ?? 0) / 100)).toLocaleString("en-IN")}{" "}
+                    <span className="line-through">₹{Number(editing.price ?? 0).toLocaleString("en-IN")}</span>{" "}
+                    <span className="text-red-500 font-semibold">{Math.round(Number(editing.discount_percentage ?? 0))}% OFF</span>
+                  </p>
+                )}
+              </div>
               <Area
                 label="Short Description *"
                 value={editing.short_description ?? ""}

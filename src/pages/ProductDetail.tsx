@@ -10,7 +10,7 @@ import {
   Copy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { type Product } from "@/lib/categories";
+import { type Product, getDiscountedPrice, getDisplayDiscount } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/ProductCard";
@@ -97,7 +97,7 @@ const ProductDetail = () => {
       : []),
   ];
 
-  const orderMsg = `Hi Vedaqur, I'm interested in ordering *${product.name}* (₹${product.price}). Please share availability and delivery details.`;
+  const orderMsg = `Hi Vedaqur, I'm interested in ordering *${product.name}* (₹${getDiscountedPrice(product)}). Please share availability and delivery details.`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -204,9 +204,23 @@ const ProductDetail = () => {
           </p>
 
           <div className="mt-5 flex items-baseline gap-3">
-            <span className="font-serif text-4xl font-bold text-primary-dark">
-              ₹{Number(product.price).toLocaleString("en-IN")}
-            </span>
+            {getDisplayDiscount(product) > 0 ? (
+              <>
+                <span className="font-serif text-4xl font-bold text-primary-dark">
+                  ₹{getDiscountedPrice(product).toLocaleString("en-IN")}
+                </span>
+                <span className="text-2xl font-semibold text-muted-foreground line-through">
+                  ₹{Number(product.price).toLocaleString("en-IN")}
+                </span>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-600 text-sm font-bold">
+                  {getDisplayDiscount(product)}% OFF
+                </span>
+              </>
+            ) : (
+              <span className="font-serif text-4xl font-bold text-primary-dark">
+                ₹{Number(product.price).toLocaleString("en-IN")}
+              </span>
+            )}
             <span className="text-sm text-muted-foreground">
               incl. all taxes
             </span>
@@ -243,7 +257,7 @@ const ProductDetail = () => {
                 className="bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold"
               >
                 <a
-                  href={productOrderLink(product.name, Number(product.price))}
+                  href={productOrderLink(product.name, getDiscountedPrice(product))}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
